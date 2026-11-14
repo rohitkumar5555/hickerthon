@@ -1,0 +1,8 @@
+{
+  "name": "Civic Air Quality Briefing Studio",
+  "description": "AI-driven civic intelligence platform turning messy air quality tables into traceable briefings, role-specific interventions, targeted zone alerts, and multilingual citizen advisories.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

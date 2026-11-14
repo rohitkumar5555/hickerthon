@@ -1,0 +1,845 @@
+# FINAL BUILD PROMPT — CIVIC AIR QUALITY BRIEFING STUDIO
+
+You are a Principal Full-Stack Systems Architect, Staff GenAI Engineer, Civic Environmental Data Specialist, Security Engineer, QA Lead, and WCAG Accessibility Expert.
+
+Build a complete, production-style, full-stack WEB application named:
+
+CIVIC AIR QUALITY BRIEFING STUDIO
+
+Do not provide a plan, wireframe, pseudo-code, mockup, partial snippet, static HTML demo, or fake dashboard. Directly create the complete multi-file application, install needed packages, run tests, fix failures, and report only actual executed results.
+
+================================================================
+1. MANDATORY PROBLEM STATEMENT
+================================================================
+
+Develop an AI-driven civic intelligence solution that enables local authorities, housing societies, and ward-level teams to turn raw air-quality data into actionable local interventions.
+
+The app must use Generative AI as a real core component to interpret pasted or uploaded messy data tables with inconsistent formats, units, dates, headers, and missing readings. It must summarize trends and likely hotspots in plain language.
+
+It must recommend prioritized local actions suitable for:
+
+- Ward Officer / local authority
+- Housing Society / RWA manager
+- School Coordinator / Principal
+
+Every finding must link to underlying data. Missing, unreliable, invalid, duplicate, or questionable readings must be clearly flagged.
+
+Every new briefing must compare against a previous compatible briefing and show what changed.
+
+The app must generate:
+
+- an internal civic briefing note;
+- multilingual citizen advisories;
+- different reading levels;
+- dedicated guidance for children, older adults, and people sensitive to poor air.
+
+The solution must visibly demonstrate this operational chain:
+
+Actual data
+→ data validation and anomaly detection
+→ traceable evidence
+→ real Gemini analysis
+→ role-specific action draft
+→ head approval
+→ targeted local alert
+→ action task dispatch
+→ completion proof
+→ next-data comparison.
+
+================================================================
+2. ZERO-TOLERANCE ANTI-FAKE RULES
+================================================================
+
+Never create:
+
+- Static/hardcoded AQI, pollution metrics, hotspot names, future forecasts, charts, alerts, task statuses, reports, maps, or comparison numbers.
+- Pre-written/canned Gemini responses.
+- Fake API/network calls, fake loading delays, fake test results, fake delivery status, or fake telemetry.
+- Placeholder/sample data presented as live data.
+- Dead buttons, decorative filters, fake charts, fake notifications, non-working exports, or “Coming soon” features.
+- A public alert without actual evidence and a real affected target scope.
+- A source-cause claim, health diagnosis, legal instruction, or official regulatory declaration not supported by data and human approval.
+
+If Gemini, Maps, database, storage, auth, or notification delivery fails, show a truthful error state and retry action. Never replace a failure with fake data.
+
+Any feature not fully implemented must not be visible in the interface.
+
+For every server-affecting control, follow this exact flow:
+
+1. Authenticate user and check RBAC.
+2. Validate/sanitize input with Zod.
+3. Lock repeated submission and show loading state.
+4. Execute real database/API/storage/browser action.
+5. Write audit log and refresh actual state.
+6. Show accessible aria-live success/error message.
+
+For purely local controls such as closing a modal or changing a tab, implement the actual local state change accessibly.
+
+When database data is wiped, every map marker, metric, chart, briefing, alert, task, and dashboard card must show a real empty state or zero state.
+
+================================================================
+3. REQUIRED STACK AND SECRETS
+================================================================
+
+Build a full-stack TypeScript application:
+
+- React + TypeScript frontend.
+- Node.js + TypeScript server routes.
+- Firestore as persistent application database.
+- Firebase Storage for source-file upload storage.
+- Server-side session authentication with password hashing and secure HTTP-only cookies.
+- `@google/genai` on the server only.
+- Google Maps JavaScript API for an actual operational evidence map.
+- Zod for every API request, response, and Gemini structured response.
+- Papa Parse for CSV/TSV.
+- SheetJS for XLSX.
+- Vitest for unit/integration tests.
+- Playwright for end-to-end tests.
+
+Use server-side Firestore transactions and application-level referential-integrity checks. Do not use LocalStorage or IndexedDB as the primary database.
+
+Required environment variables:
+
+GEMINI_API_KEY
+GEMINI_MODEL=gemini-2.5-flash
+GOOGLE_MAPS_API_KEY
+GOOGLE_MAPS_MAP_ID
+FIREBASE_PROJECT_ID
+FIREBASE_STORAGE_BUCKET
+SESSION_SECRET
+ENABLE_EVALUATOR_DEMO=true
+
+Never expose GEMINI_API_KEY, SESSION_SECRET, server credentials, or raw privileged API responses to the browser.
+
+================================================================
+4. REAL USERS, RBAC, LOGIN, AND EVALUATOR ACCESS
+================================================================
+
+Implement real registration, login, session creation, logout, session expiry, protected routes, server-side RBAC, password hashing, and brute-force lockout after five failed attempts.
+
+Create an idempotent server-side seed script for evaluator demo mode only.
+
+Accounts:
+
+1. EVALUATOR
+   Email: evaluator@example.com
+   Password: Test@12345
+
+2. WARD_OFFICER
+   Email: ward@civicstudio.gov
+   Password: Ward@12345
+
+3. HOUSING_SOCIETY
+   Email: society@civicstudio.org
+   Password: Society@12345
+
+4. SCHOOL_COORDINATOR
+   Email: school@civicstudio.edu
+   Password: School@12345
+
+Store passwords only as secure hashes.
+
+Login page must include a clearly labelled:
+
+“Judge / Evaluator Test Access”
+
+Show the four credentials and real one-click buttons:
+
+- Login as Evaluator
+- Login as Ward Officer
+- Login as Housing Society
+- Login as School
+
+These buttons must invoke the normal real login/session pipeline, not client-side role switching.
+
+Permissions:
+
+EVALUATOR:
+- Full access.
+- Persona Lens simulation.
+- Test-fixture load/reset.
+- Wipe test data.
+- Audit logs.
+- QA self-check dashboard.
+
+WARD_OFFICER:
+- Ingest data.
+- Inspect anomalies.
+- Approve ward action drafts.
+- Optimize resources.
+- Dispatch field tasks.
+- Receive escalations.
+- Send targeted ward alerts.
+
+HOUSING_SOCIETY:
+- Ingest society/ward data.
+- Generate RWA briefing.
+- Create RWA action drafts.
+- Raise spillover escalation.
+- Create resident advisory.
+- Track society tasks.
+
+SCHOOL_COORDINATOR:
+- Ingest school/ward data.
+- Generate school briefing.
+- Create child/parent advisory.
+- Create school action drafts.
+- Escalate external pollution with evidence.
+- Track school action tasks.
+
+Every unauthorized server request must return HTTP 403. Unauthorized controls must be hidden.
+
+================================================================
+5. PERSISTENT DATA ENTITIES
+================================================================
+
+Create persistent Firestore collections with UUIDs, timestamps, organization IDs, audit metadata, and server-enforced links:
+
+- users
+- sessions
+- organizations
+- memberships
+- batches
+- readings
+- areaTrajectories
+- briefings
+- citizenAdvisories
+- actionTasks
+- alerts
+- alertRecipients
+- interventionEvidence
+- auditLogs
+
+Each user record includes:
+
+id, fullName, email, passwordHash, role, organizationId, wardZone,
+failedAttempts, lockedUntil, createdAt
+
+Each batch includes:
+
+id, title, sourceType, storagePath/rawInputReference, totalRows,
+cleanRows, convertedRows, missingRows, unreliableRows,
+completenessPercent, createdBy, createdAt
+
+Each reading includes:
+
+id, batchId, rowIndex, rawCells, locationName, wardZone,
+vulnerableZoneType, latitude, longitude, coordinateConfidence,
+recordedAt, rawDateString, pollutantValues, rawValuesAndUnits,
+normalizedValues, conversionFormula, calculatedAqi,
+aqiCategory, alertLevel, dominantPollutant, flags,
+reliabilityStatus, excludeFromStatistics, createdAt
+
+Each briefing includes:
+
+id, briefingCode, batchId, previousBriefingId, personaRole,
+plainLanguageSummary, observedFacts, hotspots,
+pastPresentProjectionMatrix, immediateActions,
+doNotDoGuardrails, preventiveRoadmap, actionDrafts,
+crossRoleEscalations, dataGapReport, comparison,
+internalBriefingMarkdown, geminiModel, latencyMs,
+createdBy, createdAt
+
+Each task includes:
+
+id, briefingId, sourceRole, assignedRole, taskType,
+locationName, title, actionDraftText, approvalStatus,
+deadline, status, citedRows, completionNotes,
+completionEvidence, updatedAt
+
+Each alert includes:
+
+id, briefingId, targetScope, targetZone, severity,
+status, currentSituationText, evidenceRows,
+approvedBy, approvedAt, sentAt, nextReviewAt,
+resolvedAt, createdAt
+
+Preserve original source values forever. Never overwrite an original reading. Any correction must create a review/audit record with old value, new value, reason, actor, and timestamp.
+
+================================================================
+6. MESSY DATA INGESTION AND FORENSIC ANOMALY STUDIO
+================================================================
+
+Create `/ingest`.
+
+Accept:
+
+- pasted tables copied from Excel, WhatsApp, CSV, TSV, Markdown, or PDF text;
+- CSV;
+- TSV;
+- JSON;
+- XLSX.
+
+Visible functional actions:
+
+A. [Upload Data File]
+
+1. Open accessible file picker.
+2. Accept supported formats only.
+3. Validate size, extension, MIME type, parser output, and malformed content.
+4. Store accepted original file in Firebase Storage.
+5. Parse actual file contents.
+6. Return actual preview rows and detected headers.
+7. Reject corrupt/empty/unsupported files without crashing.
+
+B. [Paste Raw Table]
+
+1. Accept pasted text.
+2. Detect comma, tab, pipe, semicolon, or Markdown delimiters.
+3. Parse actual text.
+4. Reject input without a usable header and at least one valid data row.
+5. Never substitute sample data.
+
+C. [AI Parse Broken Table]
+
+1. Send actual pasted raw table text to a server-side Gemini route.
+2. Require structured JSON with proposed headers, possible column mappings, units, and ambiguity flags.
+3. Validate Gemini response with Zod.
+4. Show mapping proposal for human review.
+5. Do not import until required mapping is confirmed.
+
+D. [Map Columns and Validate]
+
+Allow user to map:
+
+- timestamp
+- location/ward
+- latitude/longitude if present
+- sensor/source
+- PM2.5
+- PM10
+- NO2
+- SO2
+- CO
+- O3
+- unit
+- optional AQI
+- ignore column
+
+Disable commit until required fields are valid.
+
+E. [Parse, Normalize Units and Run Forensic Audit]
+
+Must perform actual deterministic validation:
+
+- Detect pollutant aliases.
+- Normalize valid date formats.
+- Preserve unparseable dates and flag them.
+- Treat N/A, -, null, blank as missing.
+- Flag non-numeric cells.
+- Flag negative values.
+- Flag exact/near duplicates.
+- Flag extreme readings as “outlier requiring verification.”
+- Flag PM2.5 > PM10 for the same measurement period as inconsistent.
+- Flag abrupt unusual changes only as “requires field verification.”
+- Never claim sensor tampering as fact.
+- Convert mg/m³ to µg/m³ only where chemically valid.
+- Convert ppm/ppb only where pollutant type and required conditions are available.
+- If conversion cannot be scientifically justified, preserve original data and flag “conversion unavailable.”
+- Preserve conversion formula.
+
+F. [Commit Verified Batch]
+
+1. Save batch, raw rows, normalized rows, quality flags, and audit log transactionally.
+2. Show actual counts for clean, converted, missing, unreliable, duplicate, and excluded rows.
+3. Recalculate dependent actual metrics.
+
+G. Inline Row Actions
+
+- Edit mapping/corrected value with reason.
+- Include/exclude a flagged row.
+- Delete a row only with confirmation and RBAC.
+- Recompute all dependent analytics after each mutation.
+
+Evaluator test fixtures:
+
+- Fixture 1: labelled “TEST FIXTURE — NOT LIVE AIR-QUALITY DATA”, baseline data for first briefing.
+- Fixture 2: labelled “TEST FIXTURE — NOT LIVE AIR-QUALITY DATA”, messy current data with mixed units, missing cells, spike, duplicate, invalid row, and valid hotspot.
+- Fixture 3: labelled “TEST FIXTURE — NOT LIVE AIR-QUALITY DATA”, malformed stress-test input.
+
+Do not present evaluator fixtures as live public pollution data.
+
+================================================================
+7. DETERMINISTIC ANALYTICS AND SCIENTIFIC GUARDRAILS
+================================================================
+
+Before Gemini analysis, calculate all numerical facts server-side from eligible readings:
+
+- valid/invalid counts;
+- missing-data rate;
+- duplicate/outlier rate;
+- pollutant/location/time aggregates;
+- current/previous comparison;
+- trend direction when enough time-series data exists;
+- hotspot ranking;
+- reliability/confidence score;
+- data-quality limitations;
+- source-row evidence sets;
+- short-term projection only when sufficient comparable history exists.
+
+AQI requirements:
+
+- Compute CPCB AQI only when source measurements and averaging periods support a valid calculation.
+- Use highest valid pollutant sub-index as overall AQI.
+- If valid AQI cannot be calculated, display:
+  “AQI unavailable from supplied data.”
+- Never invent AQI.
+- Red-zone alert must rely on valid calculated/provided AQI and configured rule.
+- Future output must be labelled:
+  “Short-term data projection — not a guaranteed forecast.”
+
+Source pattern requirements:
+
+- Use “possible source pattern,” not confirmed source.
+- Example labels: possible construction/road dust, possible fine-smoke pattern, possible traffic influence, mixed urban pattern.
+- Do-not-do guardrails must come from a reviewed action policy catalog.
+- AI may recommend action drafts but cannot issue legally binding orders.
+
+================================================================
+8. LIVE LOCAL ACTION COMMAND CENTER
+================================================================
+
+Create `/command-center` as the first authenticated dashboard page.
+
+This is the most visible problem-solving screen. It must clearly show:
+
+1. CURRENT SITUATION NOW
+   - Latest actual status.
+   - Confidence/data quality.
+   - Current hotspot.
+   - Evidence row count.
+
+2. AFFECTED AREAS ONLY
+   - Only confirmed affected wards/buildings/schools/societies.
+   - Never unnecessary city-wide broadcast.
+
+3. HEAD ACTION IN PROGRESS
+   - Who is responsible.
+   - What action is being reviewed/dispatched.
+   - Deadline.
+   - Actual task status.
+
+4. YOUR ACTION NOW
+   - Different action for resident, parent, teacher, guard, RWA head, and ward officer.
+   - Generated from approved briefing and current evidence.
+
+5. NEXT REVIEW TIME
+   - Exact next verification/review time.
+   - Based on configured alert workflow and latest data timestamp.
+
+6. EVIDENCE AND DATA CONFIDENCE
+   - Open actual `[Row #N]` source proof.
+
+================================================================
+9. EVIDENCE MAP AND TARGETED ALERTS
+================================================================
+
+Create `/map`.
+
+Use an actual Google Map only when valid confirmed coordinates exist.
+
+Map rules:
+
+- Render marker only from imported latitude/longitude or user-confirmed real geocoding result.
+- Never invent a marker or location.
+- For ambiguous address/location, show real geocoding candidates and require confirmation.
+- Persist coordinate source, confidence, and user confirmation.
+- Marker click opens actual linked rows, raw values, normalized values, conversion math, flags, briefing, alert, and tasks.
+- Provide accessible non-map table equivalent.
+
+Map layers:
+
+- Valid hotspot.
+- Vulnerable zone.
+- Active targeted alert.
+- Dispatched task.
+- Resolved task.
+- Data-quality warning.
+
+Targeted alert workflow:
+
+1. Valid evidence condition is detected.
+2. App identifies only affected confirmed zone/recipient group.
+3. If location/data confidence is insufficient, alert only responsible head:
+   “Verification required before public alert.”
+4. Head sees source rows, confidence, recommended action draft, and deadline.
+5. Authorized head approves, edits, rejects, or requests verification.
+6. App sends in-app notification only to affected verified group.
+7. Record actual recipient count, timestamp, acknowledgement, delivery status, and audit log.
+8. “WhatsApp/SMS sent” is shown only if a configured real provider returns delivery reference.
+9. If messaging provider is unavailable, show [Copy Approved Alert] only; never show fake sent status.
+10. New actual data can improve/worsen/resolve alert with full history retained.
+
+================================================================
+10. PAST–PRESENT–PROJECTION RADAR AND RESOURCE PLANNER
+================================================================
+
+Create `/radar`.
+
+Show actual values only:
+
+- previous compatible briefing;
+- current observed state;
+- short-term projection with confidence;
+- active red-zone status;
+- approaching alert;
+- vulnerable-zone status;
+- data-quality limitations.
+
+Functional filters:
+
+- All Areas
+- Active Red Zones
+- Approaching Alert
+- School/Senior Vulnerable Zones
+- Data Quality Issues
+
+[Optimize Limited Field Resources]
+
+1. Ward Officer inputs available real resources:
+   enforcement squads, tankers, patrols, marshals.
+2. Server validates values.
+3. Deterministically rank locations by actual severity, trend, vulnerability weight, and action eligibility.
+4. Avoid recommending resource use if action-policy rules mark it unsuitable.
+5. Generate actual prioritized schedule.
+6. Head approves schedule.
+7. Approved schedule becomes actual tasks in `/tasks`.
+
+[What-if Intervention Simulator]
+
+- Show planned coverage and assumptions.
+- Do not invent AQI reduction.
+- If sufficient historical task/outcome evidence exists, show observed historical range and disclaimer:
+  “Observed association; not proof of causation.”
+- Otherwise show:
+  “Insufficient local evidence to quantify pollution reduction.”
+
+================================================================
+11. REAL GEMINI TRACEABLE BRIEFING STUDIO
+================================================================
+
+Create `/briefing-studio`.
+
+Every GenAI feature must make a real server-side `@google/genai` call.
+
+Use:
+
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY
+});
+
+const response = await ai.models.generateContent({
+  model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+  ...
+});
+
+For every Gemini request:
+
+- Record model name.
+- Record execution latency.
+- Record timestamp.
+- Record request ID.
+- Record batch and briefing ID.
+- Display real telemetry.
+- Provide [View Grounded Prompt Payload].
+- Remove secrets and redact private content from displayed payload.
+- Never claim the model saw data that was not included.
+- For large datasets, provide deterministic aggregates and evidence IDs; clearly disclose this.
+
+Gemini prompt must contain actual:
+
+- cleaned/normalized evidence rows;
+- raw-unit conversion information;
+- quality flags;
+- previous/current metrics;
+- projection assumptions;
+- active persona;
+- available resources;
+- allowed action catalog;
+- valid citation IDs only.
+
+Require Zod-validated structured output:
+
+- plainLanguageSummary
+- observedFacts
+- likelyHotspots
+- dataGapsAndUnreliableAudit
+- pastPresentProjectionMatrix
+- immediateActions0To4Hours
+- doNotDoGuardrails
+- futurePreventiveRoadmap7To30Days
+- actionDrafts
+- crossRoleEscalations
+- comparisonWithPreviousBrief
+- citations
+
+Reject Gemini output if it:
+
+- cites nonexistent evidence;
+- lacks data support;
+- recommends action outside allowed persona policy;
+- contains malformed JSON;
+- makes medical diagnosis/legal authority/guaranteed forecast/confirmed source claim.
+
+Visible working actions:
+
+- Select Asking Persona.
+- Select Previous Brief.
+- Generate Traceable AI Civic Briefing.
+- Open Row #N Citation.
+- Approve/Edit Action Draft.
+- Dispatch Approved Tasks.
+- Trigger Cross-Role Escalation.
+- Compare With Previous Brief.
+
+Citation drawer must display original raw row, normalized data, conversion formula, flags, and linked finding.
+
+================================================================
+12. MULTILINGUAL CITIZEN ADVISORY STUDIO
+================================================================
+
+Create `/citizen-advisory`.
+
+Languages:
+
+- English
+- Hindi
+- Hinglish
+- Marathi
+- Tamil
+- Bengali
+
+Reading levels:
+
+- Simple Public / Grade 5
+- Child-Friendly School Story
+- Detailed Civic and Health Context
+
+[Generate Multi-Language Citizen Advisory]
+
+1. Validate selected approved briefing, language, and level.
+2. Make a real Gemini call using actual approved briefing facts.
+3. Save actual generated response.
+4. Do not fabricate translation if one language fails.
+5. Clearly identify language-specific failures.
+
+Each advisory includes:
+
+- headline;
+- present situation;
+- past/present/projection explanation;
+- outdoor timing/window guidance;
+- children protection section;
+- older-adult protection section;
+- pollution-sensitive group section;
+- citizen do/don’t actions;
+- WhatsApp-ready text;
+- disclaimer that this community advisory does not replace official government/medical advice.
+
+Functional controls:
+
+- Listen / Pause / Stop uses actual browser speechSynthesis.
+- Handle unsupported voice/language honestly.
+- Copy WhatsApp Advisory uses actual clipboard API.
+- Print Poster and Briefing uses actual print CSS and browser print dialog.
+- Never show successful copy/print/voice state unless action succeeded.
+
+================================================================
+13. TASK BOARD, ESCALATION, AND ACTION PROOF CHAIN
+================================================================
+
+Create `/tasks`.
+
+Every task shows:
+
+- linked briefing;
+- linked citation rows;
+- source role;
+- assignee role;
+- location;
+- action draft;
+- approval state;
+- deadline;
+- status:
+  OPEN / DISPATCHED / IN_PROGRESS / COMPLETED / REJECTED;
+- completion notes;
+- completion evidence;
+- audit history.
+
+Working controls:
+
+- Filter by type, status, location, and role.
+- Add Custom Action.
+- Approve/Edit/Reject Draft.
+- Dispatch Task.
+- Update Status.
+- Add Completion Note.
+- Open Evidence.
+- Delete only after confirmation and authorization.
+
+Create visible Action Proof Chain:
+
+Reading
+→ Finding
+→ Gemini action draft
+→ Head approval
+→ Assigned task
+→ Completion proof
+→ New-data observed outcome.
+
+If later data improves, display:
+
+“Observed change after task completion. This does not prove the task caused the change.”
+
+================================================================
+14. QA, SECURITY, PERFORMANCE, ACCESSIBILITY
+================================================================
+
+Create evaluator-only `/qa-evaluator`.
+
+Do not fake test results or claim browser code can execute a full source-code suite.
+
+Implement:
+
+- Secure server-side operational self-check runner using isolated temporary QA data.
+- Automatic cleanup of QA data.
+- Actual result table:
+
+Test ID | Category | Scenario | Input | Expected | Actual | Pass/Fail | Timestamp
+
+Run actual self-checks for:
+
+- Login and five-attempt lockout.
+- Protected route.
+- RBAC 403.
+- Valid file upload.
+- Invalid/malformed upload.
+- Missing fields.
+- Unit conversion.
+- Unit-conversion unavailable.
+- Duplicate/outlier flags.
+- PM2.5 > PM10 consistency flag.
+- XSS-safe pasted input.
+- Real Gemini success.
+- Gemini failure without canned fallback.
+- Citation traceability.
+- Actual map marker source.
+- Targeted recipient scope.
+- Task dispatch.
+- Previous/current comparison.
+- Multilingual advisory.
+- Wipe database empty state.
+- Keyboard-only workflow.
+- Mobile workflow.
+
+Security requirements:
+
+- Strong password hashing.
+- Secure HttpOnly SameSite session cookie.
+- Session expiry/revocation.
+- Brute-force lockout.
+- Server-side RBAC.
+- Zod validation.
+- XSS-safe rendering.
+- Safe file parsing.
+- Rate limit auth/Gemini endpoints.
+- CSRF-safe mutation strategy.
+- No unsafe HTML rendering.
+- No secret leakage.
+- Audit logs.
+- Dependency audit.
+
+Performance requirements:
+
+- Single-pass parsing/aggregation where practical.
+- Paginate/virtualize large reading tables.
+- Server-side filters.
+- Debounce search.
+- Memoize costly UI calculations.
+- Cleanup speech/event listeners.
+- Avoid unnecessary rerenders/API calls.
+
+Accessibility requirements:
+
+- WCAG 2.1/2.2 AA practical compliance.
+- Semantic landmarks/headings.
+- Keyboard navigation.
+- Visible focus.
+- Correct labels.
+- aria-live status/error messages.
+- Accessible dialogs.
+- High contrast.
+- Icon + text + color for status.
+- Accessible chart tables.
+- Accessible map data table equivalent.
+- Responsive mobile/tablet/desktop layout.
+
+================================================================
+15. DOCUMENTATION AND SUBMISSION
+================================================================
+
+Create:
+
+README.md
+- Project description.
+- Architecture.
+- Setup steps.
+- Environment variables.
+- Evaluator credentials.
+- Gemini services used and exact features using Gemini.
+- Google Maps setup.
+- Data limitations.
+- Deployment steps.
+
+docs/EVALUATOR_GUIDE.md
+- Exact evaluator flow:
+  login → fixture baseline → briefing 1 → task completion →
+  messy current fixture → validation → map → Gemini briefing →
+  targeted alert → advisory → comparison → wipe data.
+
+docs/TEST_REPORT.md
+- Actual executed test results only.
+
+docs/SECURITY_REVIEW.md
+docs/ACCESSIBILITY_REVIEW.md
+docs/IMPLEMENTATION_REPORT.md
+docs/DEMO_VIDEO_SCRIPT.md
+docs/SUBMISSION_CHECKLIST.md
+
+Do not invent a demo-video URL. Create a 3–5 minute demo recording script and a blank field where the user can paste the real uploaded video link.
+
+================================================================
+16. FINAL ACCEPTANCE GATE
+================================================================
+
+Before declaring project completion:
+
+1. Inspect every generated file.
+2. Run lint.
+3. Run TypeScript type check.
+4. Run unit tests.
+5. Run integration tests.
+6. Run Playwright tests.
+7. Run production build.
+8. Fix all discovered issues without removing working features.
+9. Test as evaluator:
+
+   Login
+   → load labelled baseline test fixture
+   → create briefing 1
+   → approve/complete a task
+   → load current messy test fixture
+   → parse/normalize/anomaly check
+   → inspect evidence map
+   → generate real Gemini briefing
+   → approve targeted alert
+   → create multilingual advisory
+   → create escalation
+   → compare briefings
+   → wipe data
+   → verify all true empty states.
+
+10. Remove every incomplete, static, fake, hardcoded, decorative, or non-working control.
+11. Report actual passed/failed/not-run results honestly.
+
+Build the complete runnable application now.
